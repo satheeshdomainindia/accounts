@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,3 +22,14 @@ Route::get('/', function () {
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+
+Route::get('test',  function () {
+    return  Auth::user()->isAdmin();
+    
+    
+    $users = User::whereHas('roles', function($query) {
+        $query->where('role_id', 1);
+    })
+    ->get();
+});

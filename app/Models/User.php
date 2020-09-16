@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
+use App\Models\Role;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Jetstream\HasProfilePhoto;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\TwoFactorAuthenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -57,4 +58,28 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles');
+    }
+
+
+    public function hasRole($role = null)
+    {
+        $hasRole = false;
+        $hasRole = !$this->roles->filter(function($item) {
+            return $item->name == $role;
+        })->isEmpty();
+        return $hasRole;
+    }
+
+    public function isAdmin()
+    {
+        $isAdmin = false;
+        $isAdmin = !$this->roles->filter(function($item) {
+            return $item->name == 'admin';
+        })->isEmpty();
+        return $isAdmin;
+    }
 }
